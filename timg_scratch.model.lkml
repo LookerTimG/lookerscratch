@@ -8,6 +8,11 @@ datagroup: timg_scratch_default_datagroup {
   max_cache_age: "1 hour"
 }
 
+datagroup: order_facts_dg {
+  sql_trigger: SELECT MAX(created_at) FROM order_items ;;
+  max_cache_age: "24 hours"
+}
+
 persist_with: timg_scratch_default_datagroup
 
 explore: bsandell {}
@@ -21,6 +26,8 @@ explore: sql_derived_table {}
 explore: native_derived_table {}
 
 explore: order_facts {}
+
+explore: session_facts {}
 
 explore: events {
   join: users {

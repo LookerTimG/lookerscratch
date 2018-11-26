@@ -1,6 +1,21 @@
 view: order_items {
   sql_table_name: public.order_items ;;
 
+  parameter: select_measure_type_parameter {
+    label: "Select A Measure"
+    type: string
+    default_value: "Total Revenue"
+    allowed_value: {
+      label: "Total Revenue"     value: "Total Revenue"
+      }
+    allowed_value: {
+      label: "Order Count"     value: "Order Count"
+      }
+    allowed_value: {
+      label: "Average Sale Price"     value: "Average Sale Price"
+      }
+  }
+
   dimension: id {
     primary_key: yes
     type: number
@@ -100,6 +115,37 @@ view: order_items {
     sql: ${sale_price} ;;
     value_format: "$#,##0.00"
   }
+
+  measure: total_revenue {
+    type: number
+    sql: ${order_total_amt} ;;
+  }
+
+  measure: average_sale_price {
+    type: average
+    sql: ${sale_price} ;;
+    value_format: "$#,##0.00"
+  }
+
+  measure: order_count {
+    type:  count_distinct
+    sql: ${order_id} ;;
+  }
+
+  measure: count_of_selected_measure_type {
+    label_from_parameter: select_measure_type_parameter
+    type: number
+    sql: case
+    when {% parameter select_measure_type_parameter %} = 'Total Revenue' then
+    ${total_revenue}
+    when {% parameter select_measure_type_parameter %} = 'Order Count' then
+    ${order_count}
+    when {% parameter select_measure_type_parameter %} = 'Average Sale Price' then
+    ${average_sale_price}
+    end
+    ;;
+    value_format_name: decimal_0
+    }
 
   # ----- Sets of fields for drilling ------
   set: detail {

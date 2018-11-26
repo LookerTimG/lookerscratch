@@ -1,10 +1,26 @@
 view: products {
   sql_table_name: public.products ;;
 
+  filter: brand_select {
+    label: "Product Brand"
+    type:  string
+    suggest_dimension: brand
+  }
+
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
+  }
+
+  dimension: brand_comparitor {
+    type: string
+    sql: CASE
+            WHEN {% condition brand_select %} ${brand} {% endcondition %}
+            THEN ${brand}
+            ELSE 'All Other Brands'
+            END
+    ;;
   }
 
   dimension: brand {
@@ -40,7 +56,7 @@ view: products {
 
   dimension: retail_price {
     type: number
-    sql: ${TABLE}.retail_price ;;
+    sql: CASE WHEN ${TABLE}.retail_price ;;
   }
 
   dimension: sku {
